@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Test Current File with Coverage",
+      "command": "docker-compose run --rm app npm run test:cov -- --runTestsByPath ${relativeFile}",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "Test Current File",
+      "command": "docker-compose run --rm app npm run test -- --runTestsByPath ${relativeFile}",
+      "type": "shell"
+    },
+    {
+      "label": "Test All with Coverage",
+      "command": "docker-compose run --rm app npm run test:cov -- --runInBand --verbose --silent",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "Test All",
+      "command": "docker-compose run --rm app npm run test -- --runInBand --verbose --silent",
+      "type": "shell",
+      "problemMatcher": []
+    }
+  ]
+}

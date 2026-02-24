@@ -1,0 +1,31 @@
+{
+  "material-icon-theme.activeIconPack": "nest",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.exclude": {
+    "**/coverage": true,
+    "**/.git": true
+  },
+  "search.exclude": {
+    "**/coverage": true
+  },
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  // "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.spec.ts,${capture}.e2e-spec.ts,${capture}.test.ts",
+    "*.module.ts": "${capture}.controller.ts,${capture}.service.ts,${capture}.entity.ts,${capture}.dto.ts"
+  }
+}

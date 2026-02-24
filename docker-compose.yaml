@@ -1,0 +1,52 @@
+services:
+  app:
+    build:
+      context: .
+      target: ${NODE_ENV}
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+    user: node
+    stop_grace_period: 10s
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      take-home-network:
+        aliases:
+          - take-home-api
+    cpus: 1
+    mem_limit: 1GB
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15-alpine
+    user: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "5433:5432"
+    volumes:
+      - take-home-postgres:/var/lib/postgresql/data
+    networks:
+      take-home-network:
+        aliases:
+          - take-home-postgres
+
+networks:
+  take-home-network:
+    driver: bridge
+
+volumes:
+  take-home-postgres:
+    name: take-home-postgres
