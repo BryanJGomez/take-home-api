@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { ConfigurationValidate } from './config/services/configuration.validate';
 import { loggerOptions } from './utils';
 import { JobsModule } from './app/jobs/jobs.module';
+import { UsersModule } from './app/users/users.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { JobsModule } from './app/jobs/jobs.module';
     WinstonModule.forRoot(loggerOptions(process.env.APPLICATION_NAME || 'app')),
     AppModule,
     JobsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
