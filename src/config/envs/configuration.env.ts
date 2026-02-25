@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class ConfigurationEnv {
   // General Configuration
@@ -37,4 +37,17 @@ export class ConfigurationEnv {
   @IsNotEmpty()
   @IsString()
   DB_DATABASE: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  DB_LOGGING: number;
+
+  // Internal callback configuration
+  @IsOptional()
+  @IsString()
+  INTERNAL_CALLBACK_SECRET?: string;
+
+  @IsOptional()
+  @IsString()
+  INTERNAL_CALLBACK_URL?: string;
 }

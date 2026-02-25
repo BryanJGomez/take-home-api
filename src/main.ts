@@ -9,6 +9,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { loggerOptions } from './utils/';
 import { environment } from './enums/env.enum';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 async function bootstrap() {
   // Configuración de Winston para el logger
@@ -22,25 +23,30 @@ async function bootstrap() {
   const environmentData = configService.get<string>('NODE_ENV');
   const port = configService.get<number>('PORT') || 3000;
   const globalPrefix = configService.get<string>('GLOBAL_PREFIX') || 'api';
-  // Setear prefijo global para las rutas de la API
+  // Setear prefijo global para las rutas de la
+  // API (ej: /api/v1)
   app.setGlobalPrefix(globalPrefix);
+
+  // Register global exception filter
+  app.useGlobalFilters(new GlobalExceptionFilter());
   // Configurar Swagger para la documentación de la API
   const config = new DocumentBuilder()
     .addBearerAuth(
       {
         type: 'http',
         scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT token (without Bearer prefix)',
+        bearerFormat: 'API Key',
+        name: 'Authorization',
+        description: 'Enter your API key (pk_xxxxx)',
         in: 'header',
       },
-      'JWT-auth',
+      'api-key',
     )
-    .setTitle('Take home API')
+    .setTitle('VibePeak Image Processing API')
     .setVersion('1.0')
-    .addTag('App', 'Información general de la aplicación')
-    .addTag('Jobs', 'Gestión de trabajos')
+    .setDescription('Public REST API Gateway for async image processing')
+    .addTag('App', 'Application health check')
+    .addTag('Jobs', 'Image processing job management')
     .build();
   // Crear el documento de Swagger y configurar la ruta para la documentación
   const document = SwaggerModule.createDocument(app, config);
@@ -53,14 +59,14 @@ async function bootstrap() {
         displayRequestDuration: true,
         tryItOutEnabled: true,
       },
-      customSiteTitle: 'Homa Take API - Swagger',
+      customSiteTitle: 'VibePeak API - Swagger',
       customfavIcon: '/favicon.ico',
     });
   }
   // Habilitar CORS (Cross-Origin Resource Sharing)
   app.enableCors({
     origin: '*',
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key'],
     methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
     preflightContinue: false,
     credentials: true,

@@ -30,4 +30,8 @@ export class ConfigurationService {
   get dbDatabase(): string {
     return <string>this.config.get('DB_DATABASE');
   }
+
+  get dbLogging(): boolean {
+    return <boolean>this.config.get('DB_LOGGING');
+  }
 }
