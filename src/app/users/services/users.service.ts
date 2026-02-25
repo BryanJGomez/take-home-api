@@ -1,26 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { Injectable, Logger } from '@nestjs/common';
+import { UsersRepository } from '../repositories/users.repository';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  private readonly logger = new Logger(UsersService.name);
+
+  constructor(private readonly usersRepository: UsersRepository) {}
+
+  deductCredit(userId: string): Promise<boolean> {
+    return this.usersRepository.deductCredit(userId);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  refundCredit(userId: string): Promise<void> {
+    return this.usersRepository.refundCredit(userId);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} users`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  findById(id: string): Promise<User | null> {
+    return this.usersRepository.findById(id);
   }
 }

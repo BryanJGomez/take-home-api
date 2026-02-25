@@ -5,7 +5,10 @@ import { WinstonModule } from 'nest-winston';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigurationValidate } from './config/services/configuration.validate';
+import { DatabaseModule } from './database/database.module';
 import { loggerOptions } from './utils';
+import { AuthModule } from './app/auth/auth.module';
+import { IdempotencyModule } from './app/idempotency/idempotency.module';
 import { JobsModule } from './app/jobs/jobs.module';
 import { UsersModule } from './app/users/users.module';
 
@@ -16,7 +19,8 @@ import { UsersModule } from './app/users/users.module';
       validate: ConfigurationValidate,
     }),
     WinstonModule.forRoot(loggerOptions(process.env.APPLICATION_NAME || 'app')),
-    AppModule,
+    DatabaseModule,
+    AuthModule,
     JobsModule,
     UsersModule,
   ],

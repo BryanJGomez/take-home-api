@@ -1,4 +1,18 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { ApiKey } from '../../auth/entities/api-key.entity';
+import { Job } from '../../jobs/entities/job.entity';
+
+export enum UserPlan {
+  BASIC = 'basic',
+  PRO = 'pro',
+}
 
 @Entity('users')
 export class User {
@@ -17,20 +31,26 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: ['basic', 'pro'],
-    default: 'basic',
+    enum: UserPlan,
+    default: UserPlan.BASIC,
   })
-  plan: 'basic' | 'pro';
+  plan: UserPlan;
 
   @Column({ type: 'int', default: 0 })
   credits: number;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @OneToMany(() => ApiKey, (apiKey) => apiKey.user)
+  apiKeys: ApiKey[];
+
+  @OneToMany(() => Job, (job) => job.user)
+  jobs: Job[];
+
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  deletedAt: Date;
+  deletedAt: Date | null;
 }
