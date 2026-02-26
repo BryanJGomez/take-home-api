@@ -10,8 +10,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CallbackDto {
   @ApiProperty({
-    description: 'The job ID (prefixed with job_)',
-    example: 'job_a1b2c3d4',
+    description: 'The job ID',
+    example: 'a1b2c3d4',
   })
   @IsNotEmpty()
   @IsString()

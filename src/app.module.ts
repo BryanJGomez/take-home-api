@@ -4,6 +4,7 @@ import { WinstonModule } from 'nest-winston';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { HttpModule } from './common/http';
 import { ConfigurationValidate } from './config/services/configuration.validate';
 import { DatabaseModule } from './database/database.module';
 import { loggerOptions } from './utils';
@@ -18,6 +19,7 @@ import { UsersModule } from './app/users/users.module';
       validate: ConfigurationValidate,
     }),
     WinstonModule.forRoot(loggerOptions(process.env.APPLICATION_NAME || 'app')),
+    HttpModule,
     DatabaseModule,
     AuthModule,
     JobsModule,
