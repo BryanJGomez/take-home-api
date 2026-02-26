@@ -1,22 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { IProcessingDispatcher } from '../interfaces/processing-dispatcher.interface';
 import { Job } from '../../jobs/entities/job.entity';
+import { HttpService } from '../../../common/http';
+import { ConfigurationService } from '../../../config/services/configuration.service';
 
 @Injectable()
 export class MockProcessingDispatcher implements IProcessingDispatcher {
   private readonly logger = new Logger(MockProcessingDispatcher.name);
-  private readonly callbackBaseUrl: string;
-  private readonly callbackSecret: string;
 
-  constructor(private readonly configService: ConfigService) {
-    this.callbackBaseUrl =
-      this.configService.get<string>('INTERNAL_CALLBACK_URL') ||
-      `http://localhost:${this.configService.get<number>('PORT') || 3000}`;
-    this.callbackSecret =
-      this.configService.get<string>('INTERNAL_CALLBACK_SECRET') ||
-      'default-internal-secret';
-  }
+  constructor(
+    private readonly configService: ConfigurationService,
+    private readonly httpService: HttpService,
+  ) {}
 
   dispatch(job: Job): Promise<void> {
     // Simulate dispatch failure (~5% chance)
@@ -71,23 +66,21 @@ export class MockProcessingDispatcher implements IProcessingDispatcher {
   }
 
   private async sendCallback(payload: Record<string, unknown>): Promise<void> {
-    const globalPrefix =
-      this.configService.get<string>('GLOBAL_PREFIX') || 'api';
-    const url = `${this.callbackBaseUrl}/${globalPrefix}/internal/callback`;
+    const url = this.configService.queueInternalCallbackUrl;
+    const callbackSecret = this.configService.internalCallbackSecret;
 
-    const response = await fetch(url, {
+    const response = await this.httpService.request({
+      url,
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-Internal-Secret': this.callbackSecret,
+        'X-Internal-Secret': callbackSecret,
       },
       body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      const body = await response.text();
       this.logger.error(
-        `Callback to ${url} failed with status ${response.status}: ${body}`,
+        `Callback to ${url} failed with status ${response.status}: ${response.body}`,
       );
     }
   }
