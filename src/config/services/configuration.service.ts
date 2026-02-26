@@ -34,4 +34,11 @@ export class ConfigurationService {
   get dbLogging(): boolean {
     return <boolean>this.config.get('DB_LOGGING');
   }
+  // Queue CallBack
+  get internalCallbackSecret(): string {
+    return <string>this.config.get('INTERNAL_CALLBACK_SECRET');
+  }
+  get queueInternalCallbackUrl(): string {
+    return <string>this.config.get('QUEUE_INTERNAL_CALLBACK_URL');
+  }
 }
