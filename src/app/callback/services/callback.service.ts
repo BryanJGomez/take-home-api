@@ -46,7 +46,7 @@ export class CallbackService {
     // 3) Si el job tiene una webhookUrl, entregamos el resultado al cliente
     if (job.webhookUrl) {
       // Entregamos el webhook de forma asíncrona sin bloquear la respuesta al servicio de procesamiento
-      await this.deliverWebhook(job.userId, job.webhookUrl, dto);
+      void this.deliverWebhook(job.userId, job.webhookUrl, dto);
     }
   }
 

@@ -118,7 +118,7 @@ export class JobsService {
     return {
       jobId,
       status: job.status,
-      statusUrl: `/v1/jobs/${jobId}`,
+      statusUrl: `/api/v1/jobs/${jobId}`,
       createdAt: job.createdAt.toISOString(),
     };
   }
