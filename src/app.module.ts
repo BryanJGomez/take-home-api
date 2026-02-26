@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TerminusModule } from '@nestjs/terminus';
 import { WinstonModule } from 'nest-winston';
 
 import { AppController } from './app.controller';
@@ -22,6 +23,7 @@ import { CallbackModule } from './app/callback/callback.module';
     WinstonModule.forRoot(loggerOptions(process.env.APPLICATION_NAME || 'app')),
     HttpModule,
     DatabaseModule,
+    TerminusModule,
     AuthModule,
     JobsModule,
     UsersModule,

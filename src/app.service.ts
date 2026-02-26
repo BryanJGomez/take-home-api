@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { HealthCheckService, TypeOrmHealthIndicator } from '@nestjs/terminus';
 
 @Injectable()
 export class AppService {
-  constructor() {}
+  constructor(
+    private healthService: HealthCheckService,
+    private typeOrmHealthIndicator: TypeOrmHealthIndicator,
+  ) {}
 
   // Checks database health and returns system info
-  healthCheck() {
+  async healthCheck(): Promise<unknown> {
+    const result = await this.healthService.check([
+      () => this.typeOrmHealthIndicator.pingCheck('database'),
+    ]);
     return {
       'node-version': process.version,
       memory: process.memoryUsage(),
@@ -14,6 +21,7 @@ export class AppService {
       appName: process.env.APPLICATION_NAME,
       appVersion: process.env.npm_package_version,
       hostname: process.env.HOSTNAME,
+      ...result,
     };
   }
 }
