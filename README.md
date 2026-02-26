@@ -53,14 +53,19 @@ Despues de correr los seeders, puedes usar las siguientes API keys:
 ### `POST /api/v1/jobs` — Crear un trabajo
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/jobs \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer pk_pro_test_key_001" \
-  -H "Idempotency-Key: my-unique-key-123" \
-  -d '{
-    "imageUrl": "https://picsum.photos/200/300",
-    "webhookUrl": "https://example.com/webhook"
-  }'
+curl --location 'http://localhost:3000/api/v1/jobs' \
+--header 'accept: */*' \
+--header 'Authorization: Bearer pk_basic_test_key_001' \
+--header "Idempotency-Key: my-unique-key-123" \
+--header 'Content-Type: application/json' \
+--data '{
+  "imageUrl": "https://example.com/photo.jpg",
+  "webhookUrl": "https://cliente.com/webhook/resultado",
+  "options": {
+    "style": "professional",
+    "format": "landscape"
+  }
+}'
 ```
 
 Response (202 Accepted):
@@ -96,16 +101,19 @@ curl -X POST http://localhost:3000/api/v1/internal/callback \
 
 ## Tests
 
-```bash
-# Ejecutar tests unitarios
-docker compose run --rm app npm test
+El proyecto incluye tasks de VS Code configuradas para facilitar la ejecución de tests.
 
-# Ejecutar tests con watch
-docker compose run --rm app npm run test:watch
+### Usando VS Code Tasks
 
-# Ejecutar con cobertura
-docker compose run --rm app npm run test:cov
-```
+1. Abrir **Command Palette** (`Ctrl+Shift+P` o `Cmd+Shift+P`)
+2. Ejecutar **Tasks: Run Task**
+3. Seleccionar una de las opciones disponibles:
+
+#### Tests disponibles:
+
+- **`Test Current File with Coverage`**: Ejecutar test con cobertura en archivo actual
+- **`Test Current File`**: Ejecutar tests del archivo actual
+- **`Test All with Coverage`**: Ejecutar todos los tests con reporte de cobertura
 
 ## Arquitectura
 

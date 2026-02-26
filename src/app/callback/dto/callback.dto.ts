@@ -33,7 +33,7 @@ export class CallbackDto {
   })
   @IsOptional()
   @IsString()
-  @IsUrl({ protocols: ['http', 'https'], require_protocol: true })
+  @IsUrl({ protocols: ['https'], require_protocol: true })
   resultUrl?: string;
 
   @ApiPropertyOptional({
