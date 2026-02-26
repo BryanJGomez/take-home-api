@@ -11,6 +11,7 @@ import { loggerOptions } from './utils';
 import { AuthModule } from './app/auth/auth.module';
 import { JobsModule } from './app/jobs/jobs.module';
 import { UsersModule } from './app/users/users.module';
+import { CallbackModule } from './app/callback/callback.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsersModule } from './app/users/users.module';
     AuthModule,
     JobsModule,
     UsersModule,
+    CallbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -30,7 +30,7 @@ import {
 @ApiTags('Jobs') // Swagger tag para agrupar endpoints relacionados con jobs
 @ApiBearerAuth('api-key') // Indica que este controlador utiliza autenticación por API key
 @UseGuards(ApiKeyGuard) // Aplica el guard de API key a todos los endpoints del controlador
-@Controller('jobs')
+@Controller('/v1/jobs')
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
