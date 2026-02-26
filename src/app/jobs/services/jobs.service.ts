@@ -41,55 +41,55 @@ export class JobsService {
       validateUrl(dto.imageUrl, false),
       validateUrl(dto.webhookUrl, true),
     ]);
-    // 2) Verificamos límite de concurrencia antes de crear el job
-    const activeJobCount = await this.jobsRepository.countActiveByUserId(
-      user.id,
-    );
-    // Obtenemos el límite de concurrencia para el plan del usuario
+    // 2) Validamos y verificamos concurrencia y créditos, y creamos el job dentro de una transacción serializada
     const maxConcurrent = CONCURRENCY_LIMITS[user.plan];
-    if (activeJobCount >= maxConcurrent) {
-      const message = `You have reached the maximum number of concurrent jobs (${maxConcurrent}) for your plan. Please wait for existing jobs to complete before creating new ones.`;
-      throw new TooManyRequestsException(message);
-    }
-    // 3) Deducir crédito del usuario antes de crear el job
-    const creditDeducted = await this.usersService.deductCredit(user.id);
-    if (!creditDeducted) {
-      const message =
-        'You do not have enough credits to create a job. Each job costs 1 credit.';
-      throw new PaymentRequiredException(message, {
-        code: 'INSUFFICIENT_CREDITS',
-      });
-    }
-    // 4) Creamos el job con estado QUEUED antes de enviarlo a la cola para evitar condiciones de carrera
-    const job = await this.jobsRepository.create({
+    const result = await this.jobsRepository.createJobTransactional({
       userId: user.id,
-      status: JobStatus.QUEUED,
+      maxConcurrent,
       imageUrl: dto.imageUrl,
       webhookUrl: dto.webhookUrl,
       options: dto.options || null,
     });
-    // 5) mandamos el job a la cola de procesamiento
-    // Manejamos errores de dispatch para asegurar que el crédito sea reembolsado y el job marcado como fallido si no se puede procesar
+
+    if (!result.ok) {
+      if (result.reason === 'CONCURRENCY_LIMIT') {
+        this.logger.warn(
+          `User ${user.id} has ${result.activeCount} active jobs, limit is ${maxConcurrent} (${user.plan}).`,
+        );
+        throw new TooManyRequestsException(
+          `You have reached the maximum number of concurrent jobs (${maxConcurrent}) for your plan. Please wait for existing jobs to complete before creating new ones.`,
+        );
+      }
+      throw new PaymentRequiredException(
+        'You do not have enough credits to create a job. Each job costs 1 credit.',
+        { code: 'INSUFFICIENT_CREDITS' },
+      );
+    }
+    const { job } = result;
     try {
+      // 3) Intentamos despachar el job al servicio de procesamiento.
       await this.processingDispatcher.dispatch(job);
     } catch (error) {
       this.logger.error(`Failed to dispatch job ${job.id}`, error);
-      // En caso de error de dispatch, reembolsamos el crédito al usuario
-      await this.usersService.refundCredit(user.id);
-      // Marcamos el 'job' como fallido con un error genérico de dispatch
-      await this.jobsRepository.update(job.id, {
-        status: JobStatus.FAILED,
-        errorCode: 'DISPATCH_FAILED',
-        errorMessage: 'Failed to dispatch job to processing service',
-        failedAt: new Date(),
-      });
-      //
+      // Si falla el dispatch, marcamos el job como FAILED y reembolsamos el crédito al usuario
+      await Promise.all([
+        // Reembolsamos el crédito al usuario
+        // Marcamos el job como FAILED con un error específico para facilitar debugging y métricas
+        this.usersService.refundCredit(user.id),
+        this.jobsRepository.update(job.id, {
+          status: JobStatus.FAILED,
+          errorCode: 'DISPATCH_FAILED',
+          errorMessage: 'Failed to dispatch job to processing service',
+          failedAt: new Date(),
+        }),
+      ]);
+      // Informamos al cliente que el servicio de procesamiento no está disponible, pero que su crédito ha sido reembolsado
       throw new ServiceUnavailableException(
         'Processing service is temporarily unavailable. Your credit has been refunded.',
         { code: 'SERVICE_UNAVAILABLE' },
       );
     }
-    // 6) Retornamos la respuesta con el ID del job y la URL de status
+    // 4) Retornamos la respuesta de creación del job
     return this.buildCreateResponse(job);
   }
 
@@ -102,8 +102,8 @@ export class JobsService {
     return this.buildStatusResponse(job);
   }
 
-  async findById(jobId: string): Promise<Job | null> {
-    return await this.jobsRepository.findById(jobId);
+  findById(jobId: string): Promise<Job | null> {
+    return this.jobsRepository.findById(jobId);
   }
 
   updateJob(
@@ -114,7 +114,7 @@ export class JobsService {
   }
 
   private buildCreateResponse(job: Job) {
-    const jobId = `job_${job.id}`;
+    const jobId = job.id;
     return {
       jobId,
       status: job.status,
@@ -124,7 +124,7 @@ export class JobsService {
   }
 
   private buildStatusResponse(job: Job): JobStatusResponse {
-    const prefixedId = `job_${job.id}`;
+    const prefixedId = job.id;
 
     const baseResponse = {
       jobId: prefixedId,
