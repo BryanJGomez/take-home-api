@@ -81,8 +81,9 @@ async function bootstrap() {
   // Arrancar la aplicación
   await app.listen(port, () => {
     Logger.log('Listening at http://localhost:' + port + '/' + globalPrefix);
-    environmentData !== environment.production &&
+    if (environmentData !== environment.production) {
       Logger.log('Documentation in http://localhost:' + port + '/' + 'docs');
+    }
   });
 }
 void bootstrap();
