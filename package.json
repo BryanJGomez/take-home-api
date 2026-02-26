@@ -71,6 +71,11 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
   "jest": {
     "moduleFileExtensions": [
       "js",
