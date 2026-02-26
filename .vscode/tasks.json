@@ -2,6 +2,18 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Formart Current all Files",
+      "command": "docker-compose run --rm app npm run format",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "Formart linter Current all Files",
+      "command": "docker-compose run --rm app npm run lint",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
       "label": "Test Current File with Coverage",
       "command": "docker-compose run --rm app npm run test:cov -- --runTestsByPath ${relativeFile}",
       "type": "shell",
