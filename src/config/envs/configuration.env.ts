@@ -47,7 +47,7 @@ export class ConfigurationEnv {
   @IsString()
   INTERNAL_CALLBACK_SECRET?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  INTERNAL_CALLBACK_URL?: string;
+  QUEUE_INTERNAL_CALLBACK_URL: string;
 }
