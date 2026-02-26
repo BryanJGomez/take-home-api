@@ -12,7 +12,7 @@ import { CallbackService } from '../services/callback.service';
 import { InternalCallbackGuard } from '../../../common/guards/internal-callback.guard';
 
 @ApiTags('Internal')
-@Controller('internal')
+@Controller('/v1/internal')
 export class CallbackController {
   constructor(private readonly callbackService: CallbackService) {}
 
