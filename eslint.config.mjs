@@ -10,6 +10,7 @@ export default tseslint.config(
       'eslint.config.mjs',
       'commitlint.config.cjs',
       '.husky/**',
+      'dist/**',
     ],
   },
 
@@ -31,10 +32,12 @@ export default tseslint.config(
   },
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
-      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-unused-expressions': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
       'no-console': 'error',
     },
   },

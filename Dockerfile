@@ -27,6 +27,10 @@ WORKDIR /app
 
 # Install app dependencies
 COPY package*.json ./
+
+# Skip husky in Docker (no git hooks needed)
+ENV HUSKY=0
+
 RUN npm install --prefer-offline --no-audit --progress=false
 
 # Configure permissions for the 'node' user
