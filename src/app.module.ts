@@ -8,7 +8,6 @@ import { ConfigurationValidate } from './config/services/configuration.validate'
 import { DatabaseModule } from './database/database.module';
 import { loggerOptions } from './utils';
 import { AuthModule } from './app/auth/auth.module';
-import { IdempotencyModule } from './app/idempotency/idempotency.module';
 import { JobsModule } from './app/jobs/jobs.module';
 import { UsersModule } from './app/users/users.module';
 

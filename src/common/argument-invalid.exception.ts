@@ -16,3 +16,23 @@ export class InternalServerErrorException extends ExceptionBase {
   readonly statusCode = 500;
   readonly type = ExceptionType.InternalServerErrorMessage;
 }
+// Too Many Requests
+export class TooManyRequestsException extends ExceptionBase {
+  readonly statusCode = 429;
+  readonly type = ExceptionType.TooManyRequests;
+}
+// Payment Required
+export class PaymentRequiredException extends ExceptionBase {
+  readonly statusCode = 402;
+  readonly type = ExceptionType.PaymentRequired;
+}
+// Unprocessable Entity
+export class UnprocessableEntityException extends ExceptionBase {
+  readonly statusCode = 422;
+  readonly type = ExceptionType.UnprocessableEntity;
+}
+// Service Unavailable
+export class ServiceUnavailableException extends ExceptionBase {
+  readonly statusCode = 503;
+  readonly type = ExceptionType.ServiceUnavailable;
+}

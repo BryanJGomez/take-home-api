@@ -10,12 +10,12 @@ services:
       - NODE_ENV=${NODE_ENV}
       - PORT=${PORT}
     user: node
-    stop_grace_period: 10s
+    stop_grace_period: ${DOCKER_STOP_GRACE_PERIOD:-10s}
     ports:
-      - "${PORT}:${PORT}"
+      - '${PORT}:${PORT}'
     volumes:
       - .:/app
-      - /app/node_modules
+    command: bash -c "$DOCKER_COMMAND"
     networks:
       take-home-network:
         aliases:
@@ -35,7 +35,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - take-home-postgres:/var/lib/postgresql/data
     networks:
