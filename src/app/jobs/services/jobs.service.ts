@@ -7,7 +7,7 @@ import { UsersService } from '../../users/services/users.service';
 import { JobsRepository } from '../repositories/jobs.repository';
 import type { IProcessingDispatcher } from '../../dispacher/interfaces/processing-dispatcher.interface';
 import { PROCESSING_DISPATCHER } from '../../dispacher/interfaces/processing-dispatcher.interface';
-import { validateUrlSecurity } from '../../../common/validators/url-security.validator';
+import { validateUrl } from '../../../common/validators/url-security.validator';
 import {
   CreateJobResponse,
   JobStatusResponse,
@@ -36,10 +36,10 @@ export class JobsService {
   ) {}
 
   async createJob(dto: CreateJobDto, user: User): Promise<CreateJobResponse> {
-    // 1) Validate URLs against SSRF en parallel
+    // 1) Validar URLs
     await Promise.all([
-      validateUrlSecurity(dto.imageUrl, 'imageUrl', false),
-      validateUrlSecurity(dto.webhookUrl, 'webhookUrl', true),
+      validateUrl(dto.imageUrl, false),
+      validateUrl(dto.webhookUrl, true),
     ]);
     // 2) Verificamos límite de concurrencia antes de crear el job
     const activeJobCount = await this.jobsRepository.countActiveByUserId(
